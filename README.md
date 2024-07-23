@@ -24,6 +24,7 @@ fun main() = runBlocking {
     job.cancelAndJoin()
 }
 ```
+#### Не отработает, так как функция `job.cancelAndJoin()` отменяет корутины вывода до их выполнения.
 
 ### Вопрос №2
 
@@ -47,6 +48,7 @@ fun main() = runBlocking {
     job.join()
 }
 ```
+#### Не отработает, так как функция `child.cancel()` отменяет корутину вывода так же как и в первом вопросе.
 
 ## Вопросы: Exception Handling
 
@@ -68,6 +70,7 @@ fun main() {
     Thread.sleep(1000)
 }
 ```
+#### Не отработает, так как прежде выведется исключение `Exception in thread "DefaultDispatcher-worker-1" java.lang.Exception: something bad happened`.
 
 ### Вопрос №2
 
@@ -87,6 +90,7 @@ fun main() {
     Thread.sleep(1000)
 }
 ```
+#### Отработает, выбросится исключение `java.lang.Exception: something bad happened`, `сoroutineScope` позволяет создать `Scope`, который будет перехватывать ошибки во вложенных корутинах и предоставлять их в виде `Exception`.
 
 ### Вопрос №3
 
@@ -106,6 +110,7 @@ fun main() {
     Thread.sleep(1000)
 }
 ```
+#### Отработает,так как функция `supervisorScope` приостановит выброс исключения.
 
 ### Вопрос №4
 
@@ -131,6 +136,7 @@ fun main() {
     Thread.sleep(1000)
 }
 ```
+#### Не отработает, так как функция `delay` приостановит поток, в результате чего выйдет второй `Exception`.
 
 ### Вопрос №5
 
@@ -156,6 +162,7 @@ fun main() {
     Thread.sleep(1000)
 }
 ```
+#### Отработает, так как корутины запускаются в функции `supervisorScope`,при этом блок `catch` не выкинет `Exception` т.к. `supervisorScope` «не пробрасывает» исключения из дочерних корутин наверх.
 
 ### Вопрос №6
 
@@ -179,6 +186,7 @@ fun main() {
     Thread.sleep(1000)
 }
 ```
+#### Не отработает, т.к. первым выкинется `Exception`, весь `CoroutineScope` прервется прежде, чем отработают запущенные корутины.
 
 ### Вопрос №7
 
@@ -202,3 +210,4 @@ fun main() {
     Thread.sleep(1000)
 }
 ```
+#### Не отработает, т.к. `throw Exception("something bad happened")` прервет `CoroutineScope(EmptyCoroutineContext + SupervisorJob()).launch` и дочерние корутины.
